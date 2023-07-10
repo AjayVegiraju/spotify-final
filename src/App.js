@@ -59,7 +59,7 @@ function App() {
           <ul>
             {song.map((track) => (
               <li key={track.id}>
-                <img src={track.images?.[0]?.url} alt={track.name} style={{ width: '100px' ,height: '100px', objectFit: 'cover'}}/>
+                <img src={track.album.images?.[0]?.url} alt={track.name} style={{ width: '100px',height: '100px', objectFit: 'cover'}}/>
                 {track.name}</li>
             ))}
           </ul>
