@@ -57,12 +57,16 @@ h1 {
 
 
 .bg-slate-100 {
+  align-items: center;
+  margin: 5rem;
+  width: 800px;
+  text-align: center;
   background-color: #f8fafc;
   font-weight: bold;
 }
 
 .dark\:bg-slate-800 {
-  background-color: #191414;
+  background-color: #535353;
 }
 
 .rounded-xl {
@@ -116,6 +120,7 @@ h1 {
 
 .text-lg {
   font-size: 1.125rem;
+  color: white
 }
 
 .font-medium {
@@ -138,4 +143,7 @@ h1 {
   color: #d1d5db;
 }
 
+.grid grid-cols-4 gap-4{
+  margin: 10rem;
+}
 /* Add additional custom styles for top artists, songs, and playlists */
