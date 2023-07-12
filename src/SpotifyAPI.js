@@ -2,49 +2,49 @@
 import { useState, useEffect } from 'react';
 
 export const useSpotifyAPI = (clientId) => {
-  const [accessToken, setAccessToken] = useState(null);
-  const [profile, setProfile] = useState(null);
-  const [playlist, setPlaylist] = useState(null);
-  const [artists, setArtists] = useState(null);
-  const [song, setSong] = useState(null);
+    const [accessToken, setAccessToken] = useState(null);
+    const [profile, setProfile] = useState(null);
+    const [playlist, setPlaylist] = useState(null);
+    const [artists, setArtists] = useState(null);
+    const [song, setSong] = useState(null);
 
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const code = params.get("code");
+    useEffect(() => {
+        const params = new URLSearchParams(window.location.search);
+        const code = params.get("code");
 
-    if (!code) {
-        redirectToAuthCodeFlow(clientId);
-    } else {
-        const fetchData = async () => {
-            try {
-                const token = await getAccessToken(clientId, code);
-                setAccessToken(token);
-                
-                const profileData = await fetchProfile(token);
-                setProfile(profileData);
+        if (!code) {
+            redirectToAuthCodeFlow(clientId);
+        } else {
+            const fetchData = async () => {
+                try {
+                    const token = await getAccessToken(clientId, code);
+                    setAccessToken(token);
 
-                
-                const playlistData = await fetchPlaylist(token);
-                setPlaylist(playlistData);
+                    const profileData = await fetchProfile(token);
+                    setProfile(profileData);
 
 
-                const artistsData = await fetchArtists(token);
-                setArtists(artistsData);
+                    const playlistData = await fetchPlaylist(token);
+                    setPlaylist(playlistData);
 
 
-                const songData = await fetchSong(token);
-                setSong(songData);
+                    const artistsData = await fetchArtists(token);
+                    setArtists(artistsData);
 
-            } catch (error) {
-                console.error('There was a problem getting the token and data: ', error);
-            }
-        };
 
-        fetchData();
-    }
-}, [clientId]);
+                    const songData = await fetchSong(token);
+                    setSong(songData);
 
-  return { accessToken,  playlist, profile, artists, song };
+                } catch (error) {
+                    console.error('There was a problem getting the token and data: ', error);
+                }
+            };
+
+            fetchData();
+        }
+    }, [clientId]);
+
+    return { accessToken, playlist, profile, artists, song };
 }
 
 export async function redirectToAuthCodeFlow(clientId) {
@@ -119,11 +119,18 @@ async function fetchProfile(token) {
     } catch (error) {
         console.error('There was a problem with the fetch operation: ', error);
     }
+
+}
+
+
+
+async function fetchCurrent(token) {
+
 }
 
 // Add this code to fetch the top playlists
 async function fetchPlaylist(token) {
-    const result = await fetch("https://api.spotify.com/v1/me/playlists", {
+    const result = await fetch("https://api.spotify.com/v1/me/playlists?limit=5", {
         method: "GET",
         headers: { Authorization: `Bearer ${token}` }
     });
@@ -149,7 +156,7 @@ async function fetchPlaylist(token) {
 
 // Add this code to fetch the top favorite artists
 async function fetchArtists(token) {
-    const result = await fetch("https://api.spotify.com/v1/me/top/artists", {
+    const result = await fetch("https://api.spotify.com/v1/me/top/artists?time_range=short_term&limit=5", {
         method: "GET",
         headers: { Authorization: `Bearer ${token}` }
     });
@@ -174,7 +181,7 @@ async function fetchArtists(token) {
 
 
 async function fetchSong(token) {
-    const result = await fetch("https://api.spotify.com/v1/me/top/tracks", {
+    const result = await fetch("https://api.spotify.com/v1/me/top/tracks?time_range=short_term&limit=5", {
         method: "GET",
         headers: { Authorization: `Bearer ${token}` }
     });
@@ -197,6 +204,15 @@ async function fetchSong(token) {
     // }
 
 }
+
+
+
+// async function getRecommendations(){
+//     // Endpoint reference : https://developer.spotify.com/documentation/web-api/reference/get-recommendations
+//     return (await fetchWebApi(
+//       `v1/recommendations?limit=5&seed_tracks=${topTracksIds.join(',')}`, 'GET'
+//     )).tracks;
+// }
 
 
 // Update the populateUI function to fetch and display the top playlists and favorite artists
