@@ -1,5 +1,6 @@
-// src/App.js
+import { getAccessToken, redirectToAuthCodeFlow } from "./SpotifyAuth";
 import { useState, useEffect } from 'react';
+
 
 export const useSpotifyAPI = (clientId) => {
     const [accessToken, setAccessToken] = useState(null);
@@ -47,66 +48,7 @@ export const useSpotifyAPI = (clientId) => {
     return { accessToken, playlist, profile, artists, song };
 }
 
-export async function redirectToAuthCodeFlow(clientId) {
-    const verifier = generateCodeVerifier(128);
-    const challenge = await generateCodeChallenge(verifier);
 
-    localStorage.setItem("verifier", verifier);
-
-    const params = new URLSearchParams();
-    params.append("client_id", clientId);
-    params.append("response_type", "code");
-    params.append("redirect_uri", "http://localhost:5173/callback");
-    params.append("scope", "user-read-private user-read-email user-top-read playlist-read-private");
-    params.append("code_challenge_method", "S256");
-    params.append("code_challenge", challenge);
-
-    document.location = `https://accounts.spotify.com/authorize?${params.toString()}`;
-}
-
-function generateCodeVerifier(length) {
-    let text = '';
-    let possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-
-    for (let i = 0; i < length; i++) {
-        text += possible.charAt(Math.floor(Math.random() * possible.length));
-    }
-    return text;
-}
-
-async function generateCodeChallenge(codeVerifier) {
-    const data = new TextEncoder().encode(codeVerifier);
-    const digest = await window.crypto.subtle.digest('SHA-256', data);
-    return btoa(String.fromCharCode.apply(null, [...new Uint8Array(digest)]))
-        .replace(/\+/g, '-')
-        .replace(/\//g, '_')
-        .replace(/=+$/, '');
-}
-
-export async function getAccessToken(clientId, code) {
-    const verifier = localStorage.getItem("verifier");
-
-    const params = new URLSearchParams();
-    params.append("client_id", clientId);
-    params.append("grant_type", "authorization_code");
-    params.append("code", code);
-    params.append("redirect_uri", "http://localhost:5173/callback");
-    params.append("code_verifier", verifier);
-
-    const response = await fetch("https://accounts.spotify.com/api/token", {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: params
-    });
-
-    if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    const data = await response.json();
-    const { access_token } = data;
-    return access_token;
-}
 async function fetchProfile(token) {
     try {
         const response = await fetch("https://api.spotify.com/v1/me", {
@@ -206,15 +148,6 @@ async function fetchSong(token) {
 }
 
 
-
-// async function getRecommendations(){
-//     // Endpoint reference : https://developer.spotify.com/documentation/web-api/reference/get-recommendations
-//     return (await fetchWebApi(
-//       `v1/recommendations?limit=5&seed_tracks=${topTracksIds.join(',')}`, 'GET'
-//     )).tracks;
-// }
-
-
 // Update the populateUI function to fetch and display the top playlists and favorite artists
 // async function populateUI(profile, token) {
 //     // Existing code for populating profile information
@@ -262,5 +195,3 @@ async function fetchSong(token) {
 //         favoriteTracksElement.appendChild(songItem);
 //     });
 // }
-
-
