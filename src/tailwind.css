@@ -26,6 +26,21 @@ h1 {
   color: white;
   text-align: left;
 }
+.card-name {
+  margin-left: 0.7rem; /* Adjust the value as per your preference */
+  
+}
+
+
+.image-container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  padding-top: 2rem; /* Adjust the value as per your preference */
+}
+
+
+
 
 .welcome {
   width: 100%;
